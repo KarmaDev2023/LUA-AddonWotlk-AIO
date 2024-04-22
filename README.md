@@ -1,88 +1,88 @@
 # AIO
-AIO is a pure lua server-client communication system for Eluna and WoW.  
-AIO is designed for sending lua addons and data to player from server and data from player to server.  
-Made for [Eluna Lua Engine](https://github.com/ElunaLuaEngine/Eluna). Tested on 3.3.5a and should work on other patches. Tested with Lua 5.1 and 5.2.  
-[Third party C++ support is made by SaiFi0102](https://github.com/SaiFi0102/TrinityCore/blob/CAIO-3.3.5/CAIO_README.md). It allows you to use AIO without requiring Eluna.
+AIO est un pur système de communication serveur-client Lua pour Eluna et WoW.
+AIO est conçu pour envoyer des modules complémentaires Lua et des données au lecteur depuis le serveur et des données du lecteur au serveur. 
+Fabriquer pour [Eluna Lua Engine](https://github.com/ElunaLuaEngine/Eluna). Testé sur 3.3.5a et devrait fonctionner sur d'autres correctifs. Testé avec Lua 5.1 et 5.2. 
+[Third party C++ support is made by SaiFi0102](https://github.com/SaiFi0102/TrinityCore/blob/CAIO-3.3.5/CAIO_README.md). Il vous permet d'utiliser AIO sans avoir besoin d'Eluna.
 
 Backlink: https://github.com/Rochet2/AIO
 
 # Installation
-- Make sure you have [Eluna Lua Engine](https://github.com/ElunaLuaEngine/Eluna)
-- Copy the `AIO_Client` to your `WoW_installation_folder/Interface/AddOns/`
-- Copy the `AIO_Server` to your `server_root/lua_scripts/`
-- See configuration settings on AIO.lua file. You can tweak both the server and client file respectively
-- When developing an addon it is recommended to have AIO_ENABLE_PCALL off and sometimes you may need AIO_ENABLE_DEBUG_MSGS on to see some information about what is going on.
+- Assurez-vous que vous avez [Eluna Lua Engine](https://github.com/ElunaLuaEngine/Eluna)
+- Copiez le `AIO_Client` à ton `WoW_installation_folder/Interface/AddOns/`
+- Copiez le `AIO_Server` à ton `server_root/lua_scripts/`
+- Voir les paramètres de configuration sur le fichier AIO.lua. Vous pouvez modifier respectivement le fichier serveur et client
+- Lors du développement d'un module complémentaire, il est recommandé de désactiver AIO_ENABLE_PCALL et parfois vous aurez peut-être besoin d'activer AIO_ENABLE_DEBUG_MSGS pour voir des informations sur ce qui se passe..
 
-# About
-AIO works so that the server and client have their own lua scripts that handle sending and receiving messages from and to eachother.
-When an addon added to AIO as an addon to send to the client, it will be processed (depending on settings, obfuscated and compressed) and stored in memory to wait for sending to players.
-All addons that are added are executed on client side in the order they were added to AIO.
-AIO is using a cache system to cache the addon codes to client side so they dont need to be sent on every login.
-Only if an addon is changed or added the new addon is sent again. The user can also clear his local AIO cache in which case the addons will be sent again.
-The full addon code sent to client is executed on client as is. The code has full access to the client side addon API.
-The client-server messaging is handled with an AIO message helper class. It holds and manages the data to send over.
+# À propos
+AIO fonctionne de manière à ce que le serveur et le client disposent de leurs propres scripts Lua qui gèrent l'envoi et la réception de messages entre eux.
+Lorsqu'un module complémentaire est ajouté à AIO en tant que module complémentaire à envoyer au client, il sera traité (en fonction des paramètres, masqué et compressé) et stocké en mémoire en attendant d'être envoyé aux joueurs.
+Tous les modules complémentaires ajoutés sont exécutés côté client dans l'ordre dans lequel ils ont été ajoutés à AIO.
+AIO utilise un système de cache pour mettre en cache les codes complémentaires côté client afin qu'ils n'aient pas besoin d'être envoyés à chaque connexion.
+Ce n'est que si un module complémentaire est modifié ou ajouté que le nouveau module complémentaire est renvoyé. L'utilisateur peut également vider son cache AIO local, auquel cas les modules complémentaires seront à nouveau envoyés.
+Le code complémentaire complet envoyé au client est exécuté sur le client tel quel. Le code a un accès complet à l’API du module complémentaire côté client.
+La messagerie client-serveur est gérée avec une classe d'assistance de message AIO. Il contient et gère les données à envoyer.
 
-# Commands
-There are some commands that may be useful.  
-On client side use `/aio help` to see a list of them. On server side use `.aio help` to see a list of them.
+# Commandes
+Certaines commandes peuvent être utiles.
+Côté client, utilisez `/aio help` pour en voir une liste. Côté serveur, utilisez « .aio help » pour en voir une liste.
 
-# Safety
-The messaging between server and client is coded to be safe
+# Sécurité
+La messagerie entre le serveur et le client est codée pour être sécurisée
 
-- you can limit the cache sizes, delays and other in AIO.lua
-- data received from client is only deserialized - no compressions etc.
-- serialization library is not using loadstring to make deserialization safe
-- when receiving messages the code is run in pcall to prevent all user sent data creating errors. Set debug messages on in AIO.lua to see all errors on server side as well
-- the code is only as safe as you make it. In your own codes make sure all data the client sends to server and you use is the type you expect it to be and is in the range you expect it to be in. (example: math.huge is a number type, but not a real number)
-- make sure your code has asserts in place and is fast. There is a tweakable timeout in AIO.lua just to be sure that the server will not hang if you happen to write bad or abusable code or if a bad user finds a way to hang the system
-- Do check the AIO.lua settings and tweak them to your needs for both client and server respectively. This is important to fend off bad users and make things work better with your setup.
+- vous pouvez limiter la taille du cache, les délais et autres dans AIO.lua
+- les données reçues du client sont uniquement désérialisées - pas de compressions, etc.
+- la bibliothèque de sérialisation n'utilise pas de chaîne de chargement pour sécuriser la désérialisation
+- lors de la réception de messages, le code est exécuté dans pcall pour éviter que toutes les données envoyées par l'utilisateur ne créent des erreurs. Activez les messages de débogage dans AIO.lua pour voir également toutes les erreurs côté serveur
+- le code est aussi sûr que vous le créez. Dans vos propres codes, assurez-vous que toutes les données que le client envoie au serveur et que vous utilisez sont du type que vous attendez et se situent dans la plage dans laquelle vous vous attendez. (exemple : math.huge est un type numérique, mais pas un type numérique. nombre réel)
+- assurez-vous que votre code a des assertions en place et qu'il est rapide. Il y a un délai d'attente modifiable dans AIO.lua juste pour être sûr que le serveur ne se bloquera pas si vous écrivez du code incorrect ou abusif ou si un mauvais utilisateur trouve un moyen de bloquer le système.
+- Vérifiez les paramètres AIO.lua et adaptez-les à vos besoins respectivement pour le client et le serveur. Ceci est important pour repousser les mauvais utilisateurs et améliorer le fonctionnement de votre configuration.
 
-# Handlers
-AIO has a few handlers by default that are used for the internal codes and you can
-use them if you wish.  
-You can also code your own handlers and add them to AIO with the functions described in API section. See AIO.RegisterEvent(name, func) and AIO.AddHandlers(name, handlertable)
+# Gestionnaires
+AIO a quelques gestionnaires par défaut qui sont utilisés pour les codes internes et vous pouvez
+utilisez-les si vous le souhaitez.
+Vous pouvez également coder vos propres gestionnaires et les ajouter à AIO avec les fonctions décrites dans la section API. Voir AIO.RegisterEvent(name, func) et AIO.AddHandlers(name, handlertable)
 
 ```lua
--- Force reload of player UI
--- Displays a message that UI is being force reloaded and reloads UI when player
--- clicks anywhere in his screen.
-AIO.Handle(player, "AIO", "ForceReload")
+-- Forcer le rechargement de l'interface utilisateur du joueur
+-- Affiche un message indiquant que l'interface utilisateur est rechargée de force et recharge l'interface utilisateur lorsque le joueur
+-- clique n'importe où sur son écran.
+AIO.Handle(joueur, "AIO", "ForceReload")
 
--- Force reset of player UI
--- Resets AIO addon saved variables and displays a message that UI is being force
--- reloaded and reloads UI when player clicks anywhere in his screen.
-AIO.Handle(player, "AIO", "ForceReset")
+-- Forcer la réinitialisation de l'interface utilisateur du joueur
+-- Réinitialise les variables enregistrées du module complémentaire AIO et affiche un message indiquant que l'interface utilisateur est forcée
+-- rechargé et recharge l'interface utilisateur lorsque le joueur clique n'importe où sur son écran.
+AIO.Handle(joueur, "AIO", "ForceReset")
 ```
 
 # API
-For example scripts see the Examples folder. The example files are named according to their final execution location. To run the examples place all of their files to `server_root/lua_scripts/`.
+Pour des exemples de scripts, consultez le dossier Exemples. Les fichiers d'exemple sont nommés en fonction de leur emplacement d'exécution final. Pour exécuter les exemples, placez tous leurs fichiers dans `server_root/lua_scripts/`.
 
 There are some client side commands. Use the slash command `/aio` ingame to see list of commands
 
 ```lua
--- AIO is required this way due to server and client differences with require function
-local AIO = AIO or require("AIO")
+-- AIO est requis de cette façon en raison des différences entre le serveur et le client avec la fonction requise
+AIO local = AIO ou require("AIO")
 
--- Returns true if we are on server side, false if we are on client side
+-- Renvoie vrai si nous sommes côté serveur, faux si nous sommes côté client
 isServer = AIO.IsServer()
 
--- Returns AIO version - note the type is not guaranteed to be a number
+-- Renvoie la version AIO - notez que le type n'est pas garanti comme étant un nombre
 version = AIO.GetVersion()
 
--- Adds the file at given path to files to send to players if called on server side.
--- The addon code is trimmed according to settings in AIO.lua.
--- The addon is cached on client side and will be updated only when needed.
--- Returns false on client side and true on server side. By default the
--- path is the current file's path and name is the file's name
--- 'path' is relative to worldserver.exe but an absolute path can also be given.
--- You should call this function only on startup to ensure everyone gets the same
--- addons and no addon is duplicate.
-added = AIO.AddAddon([path, name])
--- The way this is designed to be used is at the top of an addon file so that the
--- file is added and not run if we are on server, and just run if we are on client:
-if AIO.AddAddon() then
-    return
-end
+-- Ajoute le fichier au chemin donné aux fichiers à envoyer aux joueurs s'il est appelé côté serveur.
+-- Le code complémentaire est coupé en fonction des paramètres dans AIO.lua.
+-- L'addon est mis en cache côté client et sera mis à jour uniquement en cas de besoin.
+-- Renvoie false côté client et true côté serveur. Par défaut le
+-- path est le chemin du fichier actuel et name est le nom du fichier
+-- 'path' est relatif à worldserver.exe mais un chemin absolu peut également être donné.
+-- Vous devez appeler cette fonction uniquement au démarrage pour vous assurer que tout le monde obtient la même chose
+-- addons et aucun addon n'est en double.
+ajouté = AIO.AddAddon([chemin, nom])
+-- La façon dont ceci est conçu pour être utilisé se trouve en haut d'un fichier complémentaire afin que le
+-- le fichier est ajouté et n'est pas exécuté si nous sommes sur le serveur, et simplement exécuté si nous sommes sur le client :
+si AIO.AddAddon() alors
+    retour
+fin
 
 -- Similar to AddAddon - Adds 'code' to the addons sent to players. The code is trimmed
 -- according to settings in AIO.lua. The addon is cached on client side and will
